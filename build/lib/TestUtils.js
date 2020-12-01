@@ -169,3 +169,18 @@ exports.EchoBarParam = React.createClass({
     );
   }
 });
+
+exports.EchoBarQuery = React.createClass({
+  displayName: 'EchoBarQuery',
+
+  contextTypes: {
+    router: PropTypes.router.isRequired
+  },
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: 'EchoBarQuery' },
+      this.context.router.getCurrentQuery().bar
+    );
+  }
+});

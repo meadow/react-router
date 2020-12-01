@@ -76,7 +76,11 @@ var PathUtils = {
     var params = {};
 
     paramNames.forEach(function (paramName, index) {
-      params[paramName] = match[index + 1];
+      var paramValue = match[index + 1];
+      if (paramValue != null) {
+        paramValue = decodeURIComponent(paramValue);
+      }
+      params[paramName] = paramValue;
     });
 
     return params;
@@ -112,7 +116,7 @@ var PathUtils = {
         segment = params[paramName];
       }
 
-      return segment;
+      return encodeURIComponent(segment);
     }).replace(paramInjectTrailingSlashMatcher, '/');
   },
 
