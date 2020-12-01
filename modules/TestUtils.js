@@ -118,3 +118,13 @@ exports.EchoBarParam = React.createClass({
     return <div className="EchoBarParam">{this.context.router.getCurrentParams().bar}</div>;
   }
 });
+
+
+exports.EchoBarQuery = React.createClass({
+  contextTypes: {
+    router: PropTypes.router.isRequired
+  },
+  render: function render() {
+    return <div className="EchoBarQuery">{this.context.router.getCurrentQuery().bar}</div>;
+  }
+});

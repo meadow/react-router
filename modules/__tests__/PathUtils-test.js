@@ -45,6 +45,10 @@ describe('PathUtils.extractParams', function () {
       it('returns an object with the params', function () {
         expect(PathUtils.extractParams(pattern, 'comments/abc.js/edit')).toEqual({ id: 'abc', ext: 'js' });
       });
+
+      it('handles slashes', function () {
+        expect(PathUtils.extractParams(pattern, 'comments/10%25%20off%20(until%208%2F23).js/edit')).toEqual({ id: '10% off (until 8/23)', ext: 'js' });
+      });
     });
 
     describe('and the pattern is optional', function () {
@@ -53,6 +57,10 @@ describe('PathUtils.extractParams', function () {
       describe('and the path matches with supplied param', function () {
         it('returns an object with the params', function () {
           expect(PathUtils.extractParams(pattern, 'comments/123/edit')).toEqual({ id: '123' });
+        });
+
+        it('handles slashes', function () {
+          expect(PathUtils.extractParams(pattern, 'comments/10%25%20off%20(until%208%2F23)/edit')).toEqual({ id: '10% off (until 8/23)' });
         });
       });
 
@@ -213,6 +221,10 @@ describe('PathUtils.injectParams', function () {
         expect(PathUtils.injectParams(pattern, { id:'123' })).toEqual('comments/123/edit');
       });
 
+      it('returns the correct path when param is supplied with special chars', function () {
+        expect(PathUtils.injectParams(pattern, { id:'10% off (until 8/23)' })).toEqual('comments/10%25%20off%20(until%208%2F23)/edit');
+      });
+
       it('returns the correct path when param is not supplied', function () {
         expect(PathUtils.injectParams(pattern, {})).toEqual('comments//edit');
       });
@@ -242,15 +254,16 @@ describe('PathUtils.injectParams', function () {
 
     describe('and some params have special URL encoding', function () {
       it('returns the correct path', function () {
-        expect(PathUtils.injectParams(pattern, { id: 'one, two' })).toEqual('comments/one, two/edit');
+        expect(PathUtils.injectParams(pattern, { id: 'one, two' })).toEqual('comments/one%2C%20two/edit');
       });
     });
 
-    describe('and a param has a forward slash', function () {
-      it('preserves the forward slash', function () {
-        expect(PathUtils.injectParams(pattern, { id: 'the/id' })).toEqual('comments/the/id/edit');
-      });
-    });
+    // Meadow: We don't support this kind of preserving slashes in params. Everything should be URI encoded.
+    // describe('and a param has a forward slash', function () {
+    //   it('preserves the forward slash', function () {
+    //     expect(PathUtils.injectParams(pattern, { id: 'the/id' })).toEqual('comments/the/id/edit');
+    //   });
+    // });
 
     describe('and some params contain dots', function () {
       it('returns the correct path', function () {
@@ -259,11 +272,13 @@ describe('PathUtils.injectParams', function () {
     });
   });
 
-  describe('when a pattern has one splat', function () {
-    it('returns the correct path', function () {
-      expect(PathUtils.injectParams('/a/*/d', { splat: 'b/c' })).toEqual('/a/b/c/d');
-    });
-  });
+  // Meadow: We don't support this kind of preserving slashes in params. Everything should be URI encoded.
+
+  // describe('when a pattern has one splat', function () {
+  //   it('returns the correct path', function () {
+  //     expect(PathUtils.injectParams('/a/*/d', { splat: 'b/c' })).toEqual('/a/b/c/d');
+  //   });
+  // });
 
   describe('when a pattern has multiple splats', function () {
     it('returns the correct path', function () {
@@ -302,6 +317,10 @@ describe('PathUtils.extractQuery', function () {
 
     it('properly handles encoded ampersands', function () {
       expect(PathUtils.extractQuery('/?id=a%26b')).toEqual({ id: 'a&b' });
+    });
+
+    it('properly handles encoded slashes', function () {
+      expect(PathUtils.extractQuery('/?id=a%2Fb')).toEqual({ id: 'a/b' });
     });
   });
 

@@ -15,6 +15,7 @@ var {
   Nested,
   EchoFooProp,
   EchoBarParam,
+  EchoBarQuery,
   RedirectToFoo,
   RedirectToFooAsync,
   Abort,
@@ -648,6 +649,14 @@ describe('Router', function () {
       });
     });
 
+    it('handles ui encoded params', function (done) {
+      var routes = <Route handler={EchoFooProp} path='/'/>;
+      Router.run(routes, '/?foo=10%25%20off%20(until%208%2F23)', function (Handler, state) {
+        expect(state.query.foo).toEqual('10% off (until 8/23)');
+        done();
+      });
+    });
+
     it('renders with empty query string', function (done) {
       var routes = <Route handler={Foo} path='/'/>;
       Router.run(routes, '/?', function (Handler, state) {
@@ -906,6 +915,25 @@ describe('Router.run', function () {
     Router.run(routes, '/d00d3tt3', function (Handler, state) {
       var html = React.renderToString(<Handler/>);
       expect(html).toMatch(/d00d3tt3/);
+      done();
+    });
+  });
+
+  it('supports dynamic segments with slashes', function (done) {
+    var routes = <Route handler={EchoBarParam} path='/:bar'/>;
+    Router.run(routes, '/10%25%20off%20(until%208%2F23)', function (Handler, state) {
+      var html = React.renderToString(<Handler/>);
+      expect(html).toMatch(/10% off \(until 8\/23\)/);
+      done();
+    });
+  });
+
+
+  it('supports query params with slashes', function (done) {
+    var routes = <Route handler={EchoBarQuery} path='/'/>;
+    Router.run(routes, '/?bar=10%25%20off%20(until%208%2F23)', function (Handler, state) {
+      var html = React.renderToString(<Handler/>);
+      expect(html).toMatch(/10% off \(until 8\/23\)/);
       done();
     });
   });

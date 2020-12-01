@@ -33,6 +33,29 @@ describe('A Link', function () {
         });
       });
     });
+
+    it('knows how to make its href (special chars)', function () {
+      var LinkHandler = React.createClass({
+        render: function () {
+          return <Link to="foo" params={{bar: '10% off (until 8/23)'}} query={{qux: 'quux'}}>Link</Link>;
+        }
+      });
+
+      var routes = [
+        <Route name="foo" path="foo/:bar" handler={Foo} />,
+        <Route name="link" handler={LinkHandler} />
+      ];
+
+      var div = document.createElement('div');
+      var location = new TestLocation([ '/link' ]);
+
+      Router.run(routes, location, function (Handler) {
+        React.render(<Handler/>, div, function () {
+          var a = div.querySelector('a');
+          expect(a.getAttribute('href')).toEqual('/foo/10%25%20off%20(until%208%2F23)?qux=quux');
+        });
+      });
+    });
   });
 
   describe('when its route is active', function () {
