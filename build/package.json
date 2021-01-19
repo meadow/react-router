@@ -1,5 +1,5 @@
 {
-  "name": "react-router",
+  "name": "@meadow/react-router",
   "version": "0.13.5",
   "description": "A complete routing library for React.js",
   "main": "lib",
