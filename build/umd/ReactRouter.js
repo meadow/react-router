@@ -2737,7 +2737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          toRoutes = nextRoutes;
 	        }
 
-	        var transition = new Transition(path, Router.replaceWith.bind(Router, path));
+	        var transition = new Transition(path, Router.replaceWith.bind(Router, path), { action: action, prevRoutes: prevRoutes, prevParams: prevParams, prevQuery: prevQuery, prevPath: prevPath });
 	        pendingTransition = transition;
 
 	        var fromComponents = mountedComponents.slice(prevRoutes.length - fromRoutes.length);
@@ -3052,8 +3052,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * an instance of this class as their first argument.
 	 */
 	function Transition(path, retry) {
+	  var meta = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
 	  this.path = path;
 	  this.abortReason = null;
+	  this.meta = meta;
 	  // TODO: Change this to router.retryTransition(transition)
 	  this.retry = retry.bind(this);
 	}
