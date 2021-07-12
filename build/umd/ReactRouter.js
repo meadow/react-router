@@ -1840,10 +1840,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _listeners = [];
 	var _isListening = false;
 
-	function notifyChange(type) {
+	function notifyChange(type, event) {
 	  var change = {
 	    path: HistoryLocation.getCurrentPath(),
-	    type: type
+	    type: type,
+	    event: event
 	  };
 
 	  _listeners.forEach(function (listener) {
@@ -1854,7 +1855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function onPopState(event) {
 	  if (event.state === undefined) return; // Ignore extraneous popstate events in WebKit.
 
-	  notifyChange(LocationActions.POP);
+	  notifyChange(LocationActions.POP, event);
 	}
 
 	/**
@@ -1893,13 +1894,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 
 	  push: function push(path) {
-	    window.history.pushState({ path: path }, '', path);
 	    History.length += 1;
+	    window.history.pushState({ path: path, historyLength: History.length }, '', path);
 	    notifyChange(LocationActions.PUSH);
 	  },
 
 	  replace: function replace(path) {
-	    window.history.replaceState({ path: path }, '', path);
+	    window.history.replaceState({ path: path, historyLength: History.length }, '', path);
 	    notifyChange(LocationActions.REPLACE);
 	  },
 
@@ -2678,7 +2679,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 
 	      handleLocationChange: function handleLocationChange(change) {
-	        Router.dispatch(change.path, change.type);
+	        Router.dispatch(change.path, change.type, change.event);
 	      },
 
 	      /**
@@ -2697,7 +2698,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	       * transition. To resolve asynchronously, they may use the callback argument. If no
 	       * hooks wait, the transition is fully synchronous.
 	       */
-	      dispatch: function dispatch(path, action) {
+	      dispatch: function dispatch(path, action, event) {
 	        Router.cancelPendingTransition();
 
 	        var prevPath = state.path;
@@ -2737,7 +2738,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          toRoutes = nextRoutes;
 	        }
 
-	        var transition = new Transition(path, Router.replaceWith.bind(Router, path), { action: action, prevRoutes: prevRoutes, prevParams: prevParams, prevQuery: prevQuery, prevPath: prevPath });
+	        var transition = new Transition(path, Router.replaceWith.bind(Router, path), { action: action, prevRoutes: prevRoutes, prevParams: prevParams, prevQuery: prevQuery, prevPath: prevPath, event: event, location: location, test: 'it' });
 	        pendingTransition = transition;
 
 	        var fromComponents = mountedComponents.slice(prevRoutes.length - fromRoutes.length);

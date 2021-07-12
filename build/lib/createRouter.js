@@ -276,7 +276,7 @@ function createRouter(options) {
       },
 
       handleLocationChange: function handleLocationChange(change) {
-        Router.dispatch(change.path, change.type);
+        Router.dispatch(change.path, change.type, change.event);
       },
 
       /**
@@ -295,7 +295,7 @@ function createRouter(options) {
        * transition. To resolve asynchronously, they may use the callback argument. If no
        * hooks wait, the transition is fully synchronous.
        */
-      dispatch: function dispatch(path, action) {
+      dispatch: function dispatch(path, action, event) {
         Router.cancelPendingTransition();
 
         var prevPath = state.path;
@@ -335,7 +335,7 @@ function createRouter(options) {
           toRoutes = nextRoutes;
         }
 
-        var transition = new Transition(path, Router.replaceWith.bind(Router, path), { action: action, prevRoutes: prevRoutes, prevParams: prevParams, prevQuery: prevQuery, prevPath: prevPath });
+        var transition = new Transition(path, Router.replaceWith.bind(Router, path), { action: action, prevRoutes: prevRoutes, prevParams: prevParams, prevQuery: prevQuery, prevPath: prevPath, event: event, location: location, test: 'it' });
         pendingTransition = transition;
 
         var fromComponents = mountedComponents.slice(prevRoutes.length - fromRoutes.length);

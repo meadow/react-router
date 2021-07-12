@@ -6,10 +6,11 @@ var History = require('../History');
 var _listeners = [];
 var _isListening = false;
 
-function notifyChange(type) {
+function notifyChange(type, event) {
   var change = {
     path: HistoryLocation.getCurrentPath(),
-    type: type
+    type: type,
+    event: event
   };
 
   _listeners.forEach(function (listener) {
@@ -20,7 +21,7 @@ function notifyChange(type) {
 function onPopState(event) {
   if (event.state === undefined) return; // Ignore extraneous popstate events in WebKit.
 
-  notifyChange(LocationActions.POP);
+  notifyChange(LocationActions.POP, event);
 }
 
 /**
@@ -59,13 +60,13 @@ var HistoryLocation = {
   },
 
   push: function push(path) {
-    window.history.pushState({ path: path }, '', path);
     History.length += 1;
+    window.history.pushState({ path: path, historyLength: History.length }, '', path);
     notifyChange(LocationActions.PUSH);
   },
 
   replace: function replace(path) {
-    window.history.replaceState({ path: path }, '', path);
+    window.history.replaceState({ path: path, historyLength: History.length }, '', path);
     notifyChange(LocationActions.REPLACE);
   },
 
