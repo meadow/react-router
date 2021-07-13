@@ -12,8 +12,11 @@ var Redirect = require('./Redirect');
  * an instance of this class as their first argument.
  */
 function Transition(path, retry) {
+  var meta = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
   this.path = path;
   this.abortReason = null;
+  this.meta = meta;
   // TODO: Change this to router.retryTransition(transition)
   this.retry = retry.bind(this);
 }
